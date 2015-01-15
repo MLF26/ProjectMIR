@@ -1,10 +1,28 @@
-setwd("C:/Users/Znogoud/Documents/Pougne/3A/ECL/Option/Projet")
-data<-read.csv("~/Pougne/3A/ECL/Option/Projet/20150114.csv")
-data$text<-tolower(data$text)
-data$text<-gsub("[0-9]"," number",data$text)
-
-x<-"ajrajj http://rjaar.com arar htt://"
-
-x="alloriaj7Njala8"
-regexpr("http://[a-z,A-Z]",x)
-gsub("http://[a-z,A-Z]*","number",x)
+processtweet=function(fichier){
+        
+        data<-read.csv(fichier)
+        data$text<-tolower(data$text) #passage en minuscule
+        data$text<-gsub("<u\\+[[:alnum:]]{4}>","",data$text)
+        data$text<-gsub("http[s]?(://[[:alnum:]]*(.com|.fr|.net|.org|.co)?(/[[:alnum:]]*)*)?"," httpaddr ",data$text) #gestion des URL
+        data$text<-gsub("[0-9]+"," number ",data$text) #gestion des chiffres
+        data$text<-gsub("@","1234",data$text) #conserver les @ et #
+        data$text<-gsub("#","5678",data$text)
+        data$text<-gsub("(é|è|ê|ë)","e",data$text)
+        data$text<-gsub("ç","c",data$text)
+        data$text<-gsub("(à|â)","a",data$text)
+        data$text<-gsub("ù","u",data$text)
+        data$text<-gsub("ô","o",data$text)
+        data$text<-gsub("o","oe",data$text)
+        data$text<-gsub("î","i",data$text)
+        data$text<-gsub("[[:punct:]]"," ",data$text) #on retire la ponctuation
+        data$text<-gsub("("|"|'|.|-)","",data$text) #autre ponctuation
+        data$text<-gsub("1234"," @",data$text)
+        data$text<-gsub("5678"," #",data$text)
+        data$text<-gsub("(^[[:space:]]+|^rt[[:space:]]+)","",data$text) #début de tweet
+        data$text<-gsub("[[:space:]]+", " ", data$text) #espaces en un seul espace + espace insécable
+        
+        fichierclean=paste0(sub(".[[:alnum:]]*$","",fichier),"clean.csv")
+        
+        write.csv(data,file=fichierclean)
+        
+}
