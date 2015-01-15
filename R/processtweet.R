@@ -28,9 +28,9 @@ processtweet=function(fichier){
         data$text<-gsub("1234"," @",data$text)
         data$text<-gsub("5678"," #",data$text)
         
-        #DEBUT TWEET
-        data$text<-gsub("(^[[:space:]]+|^rt[[:space:]]+)","",data$text) #début de tweet
-        data$text<-gsub("[[:space:]]+", " ", data$text) #espaces en un seul espace + espace insécable
+        #MOTS TROP COURANTS
+        library(tm)
+        data$text<-removeWords(data$text,stopwords("fr"))
         
         #STEMMING
         library(SnowballC)
@@ -38,6 +38,10 @@ processtweet=function(fichier){
                 x<-wordStem(as.vector(strsplit(data$text[i],split=" ")[[1]]),language="french")
                 data$text[i]<-paste(x,collapse=" ")
         }
+        
+        #DEBUT TWEET/ESPACES
+        data$text<-gsub("(^[[:space:]]+|^rt[[:space:]]+)","",data$text) #début de tweet
+        data$text<-gsub("[[:space:]]+", " ", data$text) #espaces en un seul espace + espace insécable
        
         fichierclean=paste0(sub(".[[:alnum:]]*$","",fichier),"clean.csv")
         
