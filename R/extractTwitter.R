@@ -1,6 +1,7 @@
 extract.twitter = function(dossier, words, ntwit=100000)
 {
         library(twitteR)
+        setwd(dossier)
         
         #Twitter Authentication 
         ids<-scan(file="idstwitter.txt",what="character")
@@ -9,9 +10,6 @@ extract.twitter = function(dossier, words, ntwit=100000)
         access_token <- ids[3]
         access_token_secret <- ids[4]
         setup_twitter_oauth(api_key,api_secret,access_token,access_token_secret)
-        
-        
-        setwd(dossier)
         
         date.string = format(Sys.Date(), "%Y%m%d.csv")
         date.today = format(Sys.Date(), "%Y-%m-%d")

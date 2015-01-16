@@ -13,12 +13,13 @@ getdictionnary=function(learningbase,freq=0.05){
         
         #CONSTRUCTION DU DICTIONNAIRE DE MOTS
         y<-as.matrix(x)
-        y<-head(sort(rowSums(y), decreasing=TRUE),N)
+        y<-sort(rowSums(y), decreasing=TRUE)
         y<-as.data.frame(y)
         mots<-row.names(y)
         
         dico<-data.frame(mots,y,row.names=NULL)
         names(dico)<-c("Mots","Frequence")
+        dico<-dico[dico$Frequence>N,]
         
         write.csv(dico,file="dico.csv")
         
