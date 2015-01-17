@@ -1,5 +1,6 @@
-processtweet=function(fichier){
+processtweet=function(fichier,dico){ #!!!LE DICO DOIT ETRE ISSU DE GETDICTIONNARY!!!"
         
+        library(tm)
         data<-read.csv(fichier)
         
         #CASSE
@@ -8,10 +9,11 @@ processtweet=function(fichier){
         
         #NOMBRE ET URL
         data$text<-gsub("http[s]?(://[[:alnum:]]*(.com|.fr|.net|.org|.co)?(/[[:alnum:]]*)*)?"," httpaddr ",data$text) #gestion des URL
-        data$text<-gsub("[0-9]+"," number ",data$text) #gestion des chiffres
+        data$text<-removeNumbers(data$text) #gestion des chiffres
         
         data$text<-gsub("@","1234",data$text) #conserver les @ et #
         data$text<-gsub("#","5678",data$text)
+        data$text<-gsub("(???|$|£)","money",data$text)
         
         #CARACTERE SPECIAUX
         data$text<-gsub("(é|è|ê|ë)","e",data$text)
@@ -19,17 +21,16 @@ processtweet=function(fichier){
         data$text<-gsub("(à|â)","a",data$text)
         data$text<-gsub("ù","u",data$text)
         data$text<-gsub("ô","o",data$text)
-        data$text<-gsub("o","oe",data$text)
         data$text<-gsub("î","i",data$text)
         
         #PONCTUATION
-        data$text<-gsub("[[:punct:]]"," ",data$text) #on retire la ponctuation
-        data$text<-gsub("("|"|'|.|-)","",data$text) #autre ponctuation
+        data$text<-removePunctuation(data$text) #on retire la ponctuation
+        data$text<-gsub("('|"|"|-)","",data$text) #autre ponctuation
+        data$text<-gsub(".","",data$text)
         data$text<-gsub("1234"," @",data$text)
         data$text<-gsub("5678"," #",data$text)
         
         #MOTS TROP COURANTS
-        library(tm)
         data$text<-removeWords(data$text,stopwords("fr"))
         
         #STEMMING
@@ -41,10 +42,40 @@ processtweet=function(fichier){
         
         #DEBUT TWEET/ESPACES
         data$text<-gsub("(^[[:space:]]+|^rt[[:space:]]+)","",data$text) #début de tweet
-        data$text<-gsub("[[:space:]]+", " ", data$text) #espaces en un seul espace + espace insécable
+        data$text<-stripWhitespace(data$text) #espaces en un seul espace + espace insécable
        
-        fichierclean=paste0(sub(".[[:alnum:]]*$","",fichier),"clean.csv")
+        #CONSTRUCTION VECTEUR DE MOTS / AU DICTIONNAIRE
+        library(RecordLinkage)
+        dico<-read.csv(dico)
         
-        write.csv(data,file=fichierclean)
+        tweetfeature<-data.frame(matrix(0,0,length(dico$Mots)),row.names=NULL)
+        
+        for (i in 1:length(data$text)){
+                
+                vectexti=as.vector(strsplit(data$text[i],split=" ")[[1]])
+                vecmotsi=c()
+                
+                for (j in 1:length(dico$Mots)){
+                        
+                        vecmotsi=c(vecmotsi,0)
+                        
+                        for (k in 1:length(vectexti)){
+                                
+                                if (jarowinkler(vectexti[k],as.character(dico$Mots[j]))==1){
+                                        vecmotsi[j]=1
+                                }
+                                
+                        }
+                        
+                }
+                
+                tweetfeature<-rbind(tweetfeature,vecmotsi)
+        }
+        
+        names(tweetfeature)<-dico$Mots
+        
+        fichierfeatures=paste0(sub(".[[:alnum:]]*$","",fichier),"features.csv")
+        
+        write.csv(tweetfeature,file=fichierfeatures)
         
 }
