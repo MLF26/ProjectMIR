@@ -1,6 +1,7 @@
 extract.twitter = function(dossier, words, ntwit=100000)
 {
         library(twitteR)
+        library(stringi)
         setwd(dossier)
         
         #Twitter Authentication 
@@ -31,7 +32,10 @@ extract.twitter = function(dossier, words, ntwit=100000)
         }
         
         d$text<-gsub("\n","",d$text)
+        d$text<-stri_encode(d$text, "", "UTF-8")
+        print(Encoding(as.vector(d$text)))
         d$text<-tolower(d$text) #passage en minuscule
-        con<-file(date.string,encoding="utf8")
+        con<-file(date.string,encoding="UTF-8")
         write.csv(d,file=con)
+        return(d)
 }

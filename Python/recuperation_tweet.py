@@ -1,10 +1,18 @@
-# -*- codint=utf8 -*-
+#!/usr /bin/env python
+# -*- coding=UTF-8 -*-
+from __future__ import unicode_literals
 
 def extraire_tweets(Liste):
     '''Cette fonction permet de r??cup??rer les tweets correspondants aux mots cl??s demand??s'''
     '''Cette fonction prend en argument une liste de mots cl??s'''
-
-    import csv, codecs, tweepy, time
+    
+    import augmentation_path #Pour importer tweepy
+    augmentation_path.augmentation_path()
+    import csv 
+    import tweepy 
+    import time
+    import nettoyage_texte
+    
     from datetime import datetime
 
     tps1=time.clock() #temps au d?but du programme
@@ -24,15 +32,15 @@ def extraire_tweets(Liste):
     #Creation of the actual interface, using authentification
     api=tweepy.API(auth)
 
-    #R??cup??ration des tweets
+    #Récupération des tweets
     Liste_de_tweets=[]
     Liste_de_tweets.append(["keyword","user.id","user.screen_name", "user.location", "coordinates", "created_at", "geo", "id_str", "in_reply_to_screen_name", "in_reply_to_status_id_str", "in_reply_to_user_id_str", "retweet_count", "retweeted", "source", "source_url", "text", "truncated"])
 
-    #Boucle sur les mots cl??s de recherche
+    #Boucle sur les mots clés de recherche
     for mot in Liste:
 
-        #Boucle sur les tweets r??sultats d'une requ??te
-        for tweet in tweepy.Cursor(api.search, q=mot, since=yesterday, until=today,lang='fr').items():
+        #Boucle sur les tweets résultats d'une requête
+        for tweet in tweepy.Cursor(api.search, q=mot, since=yesterday, until=today,lang='fr').items(10):
 
             attributs_tweets=[mot]
             attributs_tweets.append(tweet.user.id)
@@ -48,19 +56,21 @@ def extraire_tweets(Liste):
             attributs_tweets.append(tweet.retweet_count)
             attributs_tweets.append(tweet.retweeted)
             attributs_tweets.append(tweet.source)
+            nettoyage_texte.epure_texte(tweet.text)
             attributs_tweets.append(tweet.text)
+
 
             Liste_de_tweets.append(attributs_tweets)
             del attributs_tweets
-            time.sleep(0.2) # respect de la fr?quence de l'api
+            time.sleep(0.2) # respect de la fréquence de l'api
     #On retourne un tableau contenant tous les tweets
 
     file = open("C:\\Users\\Olivier\\Documents\\Projet_MIR\\Fichier_csv\\" + today + ".csv", "wb")
 
     try:
-        # Cr??ation de l'''??crivain'' CSV.
+        # Création de l'écrivain CSV.
         writer = csv.writer(file)
-        # ??criture de la ligne d'en-t??te avec les titres
+        # écriture de la ligne d'en-t??te avec les titres
         for element in Liste_de_tweets:
             writer.writerow([unicode(s).encode("utf-8") for s in element])
     finally:
@@ -70,5 +80,6 @@ def extraire_tweets(Liste):
         file.close()
         tps2=time.clock() #temps ? la fin du programme
         print(str(len(Liste_de_tweets)-1) + u" Tweets recuperes en " + str(tps2-tps1) + "secondes")
-
-a=extraire_tweets(["#ps","parti socialiste"])
+        return Liste_de_tweets
+        
+a=extraire_tweets(["#ps"])
