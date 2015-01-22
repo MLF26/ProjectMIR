@@ -1,7 +1,7 @@
 getdictionnary=function(learningbase,freq=0.05){
 
         library(tm)
-        data<-read.csv(learningbase)
+        data<-read.csv(learningbase, encoding="utf8")
                     
         #CASSE
         data$text<-tolower(data$text) #passage en minuscule
@@ -13,15 +13,15 @@ getdictionnary=function(learningbase,freq=0.05){
         
         data$text<-gsub("@","1234",data$text) #conserver les @ et #
         data$text<-gsub("#","5678",data$text)
-        data$text<-gsub("(???|$|£)","money",data$text)
+        data$text<-gsub("(???|$|Â£)","money",data$text)
         
         #CARACTERE SPECIAUX
-        data$text<-gsub("(é|è|ê|ë)","e",data$text)
-        data$text<-gsub("ç","c",data$text)
-        data$text<-gsub("(à|â)","a",data$text)
-        data$text<-gsub("ù","u",data$text)
-        data$text<-gsub("ô","o",data$text)
-        data$text<-gsub("î","i",data$text)
+        data$text<-gsub("(Ã©|Ã¨|Ãª|Ã«)","e",data$text)
+        data$text<-gsub("Ã§","c",data$text)
+        data$text<-gsub("(Ã |Ã¢)","a",data$text)
+        data$text<-gsub("Ã¹","u",data$text)
+        data$text<-gsub("Ã´","o",data$text)
+        data$text<-gsub("Ã®","i",data$text)
         
         #PONCTUATION
         data$text<-removePunctuation(data$text) #on retire la ponctuation
@@ -41,8 +41,8 @@ getdictionnary=function(learningbase,freq=0.05){
         }
         
         #DEBUT TWEET/ESPACES
-        data$text<-gsub("(^[[:space:]]+|^rt[[:space:]]+)","",data$text) #début de tweet
-        data$text<-stripWhitespace(data$text) #espaces en un seul espace + espace insécable
+        data$text<-gsub("(^[[:space:]]+|^rt[[:space:]]+)","",data$text) #dÃ©but de tweet
+        data$text<-stripWhitespace(data$text) #espaces en un seul espace + espace insÃ©cable
         
         #CONSTRUCTION DU DICTIONNAIRE
         #RECHERCHE MOTS PLUS FREQUENTS
@@ -52,7 +52,7 @@ getdictionnary=function(learningbase,freq=0.05){
         
         #CREATION D'UN CORPUS ET TDM
         x<-Corpus(VectorSource(data$text))
-        x<-TermDocumentMatrix(x,control = list(wordLengths = c(3,10))) #on ne considère pas les mots trop longs et trop courts
+        x<-TermDocumentMatrix(x,control = list(wordLengths = c(3,10))) #on ne considÃ¨re pas les mots trop longs et trop courts
         
         #CONSTRUCTION DU DICTIONNAIRE DE MOTS
         y<-as.matrix(x)

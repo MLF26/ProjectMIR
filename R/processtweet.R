@@ -1,4 +1,4 @@
-processtweet=function(fichier,dico){ #!!!LE DICO DOIT ETRE ISSU DE GETDICTIONNARY!!!"
+processtweet=function(fichier,dico){ #!!!LE DICO DOIT ETRE ISSU DE GETDICTIONNARY!!!
         
         library(tm)
         data<-read.csv(fichier)

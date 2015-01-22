@@ -31,5 +31,7 @@ extract.twitter = function(dossier, words, ntwit=100000)
         }
         
         d$text<-gsub("\n","",d$text)
-        write.csv(d, file = date.string)
+        d$text<-tolower(d$text) #passage en minuscule
+        con<-file(date.string,encoding="utf8")
+        write.csv(d,file=con)
 }
