@@ -1,7 +1,7 @@
 getdictionnary=function(learningbase,freq=0.05){
 
         library(tm)
-        data<-read.csv(learningbase)
+        data<-read.csv(learningbase, encoding="utf8")
                     
         #CASSE
         data$text<-tolower(data$text) #passage en minuscule
