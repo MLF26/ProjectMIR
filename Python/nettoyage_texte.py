@@ -1,33 +1,31 @@
 #!/usr/bin/python
 #-*- coding:utf8 -*-
 
-import re
-
 def epure_texte(chaine):
 
     #lettre e
-    chaine = re.sub("ê", "e", chaine)
-    chaine = re.sub("é", "e", chaine)
-    chaine = re.sub("è", "e", chaine)
+    chaine = chaine.replace("ê", "e")
+    chaine = chaine.replace("é", "e")
+    chaine = chaine.replace("è", "e")
     #lettre a
-    chaine = re.sub("à", "a", chaine)
-    chaine = re.sub("â", "a", chaine)
+    chaine = chaine.replace("à", "a")
+    chaine = chaine.replace("â", "a")
     #lettre i
-    chaine = re.sub("î", "i", chaine)
-    chaine = re.sub("ï", "i", chaine)
+    chaine = chaine.replace("î", "i")
+    chaine = chaine.replace("ï", "i")
     #apostrophe
-    chaine = re.sub("m\'","",chaine)
-    chaine = re.sub("l\'","",chaine)
-    chaine = re.sub("d\'","",chaine)
-    chaine = re.sub("c\'","",chaine)
-    chaine = re.sub("j\'","",chaine)
-    chaine = re.sub("n\'","",chaine)
-    chaine = re.sub("qu\'","",chaine)
-    chaine = re.sub("s\'","",chaine)
-    chaine = re.sub("t\'","",chaine)
+    chaine = chaine.replace("m\'","")
+    chaine = chaine.replace("l\'","")
+    chaine = chaine.replace("d\'","")
+    chaine = chaine.replace("c\'","")
+    chaine = chaine.replace("j\'","")
+    chaine = chaine.replace("n\'","")
+    chaine = chaine.replace("qu\'","")
+    chaine = chaine.replace("s\'","")
+    chaine = chaine.replace("t\'","")
     #retour à la ligne
-    chaine = re.sub("\n","",chaine)
-    print(chaine)
+    chaine= chaine.replace("\n","")
+    
     return chaine
 
-    
+
