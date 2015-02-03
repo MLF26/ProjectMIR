@@ -1,41 +1,104 @@
-extract.twitter = function(dossier, words, ntwit=100000)
+extract.twitter = function(subDir, words, ntweets = 10000000, startDate = Sys.Date()-10)
 {
         library(twitteR)
         library(stringi)
-        setwd(dossier)
+        library( stringr)
+        library(SnowballC)
+        library(tm)
         
         #Twitter Authentication 
-        ids<-scan(file="idstwitter.txt",what="character")
-        api_key <- ids[1] 
-        api_secret <- ids[2]
-        access_token <- ids[3]
-        access_token_secret <- ids[4]
+        perso<-scan(file="C:/Projet/perso.txt",what="character")
+        api_key <- perso[1] 
+        api_secret <- perso[2]
+        access_token <- perso[3]
+        access_token_secret <- perso[4]      
         setup_twitter_oauth(api_key,api_secret,access_token,access_token_secret)
+               
+        #Repertory of the project
+        mainDir <- perso[5]
+        setwd(mainDir)
         
-        date.string = format(Sys.Date(), "%Y%m%d.csv")
-        date.today = format(Sys.Date(), "%Y-%m-%d")
-        date.yesterday = format(Sys.Date()-1, "%Y-%m-%d")
+        days = seq(startDate, Sys.Date()-1, "days")
+        
+        # Create the folder
+        if(file.access(subDir)!=0)
+        {
+          dir.create(file.path(mainDir, subDir), showWarnings = FALSE)
+        }
+        setwd(file.path(mainDir, subDir)) 
+        
+        
         
         n <- c("keyword","text","favorited","favoriteCount","replyToSN","created","truncated",
                "replyToSID", "id", "replyToUID", "statusSource", "screenName",
                "retweetCount","isRetweet","retweeted","longitude","latitude")    
         
-        d <- data.frame(matrix(0,0,17))
-        names(d)<-n
+        result <- data.frame(matrix(0,0,17))
+        names(result)<-n
         
-        for(word in words)
+        
+        for(day in days)
         {
-                tweets = searchTwitter(word, n = ntwit, lang="fr",since=date.yesterday, until=date.today)
-                tweets.df <- do.call("rbind", lapply(tweets, as.data.frame))
-                tweets.df$keyword <- word
-                d <- rbind(d,tweets.df)
-        }
+          # Prepare date formats for Twitter and output file        
+          currDay = format(as.Date(day, origin="1970-01-01"), "%Y-%m-%d")
+          currNextDay = format(as.Date(day+1, origin="1970-01-01"), "%Y-%m-%d")
+          fileName = format(as.Date(day, origin="1970-01-01"), "%Y%m%d.csv")
         
-        d$text<-gsub("\n","",d$text)
-        d$text<-stri_encode(d$text, "", "UTF-8")
-        print(Encoding(as.vector(d$text)))
-        d$text<-tolower(d$text) #passage en minuscule
-        con<-file(date.string,encoding="UTF-8")
-        write.csv(d,file=con)
-        return(d)
+        
+          n <- c("keyword","text","favorited","favoriteCount","replyToSN","created","truncated",
+                 "replyToSID", "id", "replyToUID", "statusSource", "screenName",
+                 "retweetCount","isRetweet","retweeted","longitude","latitude")    
+        
+          d <- data.frame(matrix(0,0,17))
+          names(d)<-n
+          
+          # Loop over the keywords
+          for(word in words)
+          {
+                  tweets = searchTwitter(word, n = ntweets, lang="fr",since=currDay, until=currNextDay)
+                  tweets.df <- do.call("rbind", lapply(tweets, as.data.frame))
+                  tweets.df$keyword <- word
+                  d <- rbind(d,tweets.df)
+          }
+
+          d$text<-stri_encode(d$text, "", "UTF-8")
+        
+          #Text cleaning
+          d$text <- clean.text(d$text)
+      
+       
+          #Remove frequent words
+          d$textStemming<-removeWords(d$text,stopwords("fr"))
+       
+          #Stemming
+          for (i in 1:length(d$textStemming)){
+            x<-wordStem(as.vector(strsplit(d$textStemming[i],split=" ")[[1]]),language="french")
+            d$textStemming[i]<-paste(x,collapse=" ")
+          }
+          
+          result = rbind(result, d)
+
+          con<-file(fileName,encoding="UTF-8")  
+          write.csv(d,file=con)
+        }
+    return(result)
+}
+
+
+clean.text = function(text)
+{
+  
+  text = gsub('[^[:alnum:]]', ' ', text)
+  text = gsub('[[:punct:]]', '', text)
+  text = gsub('[[:cntrl:]]', '', text)
+  text<-gsub("\n","",text)
+  text = tolower(text)
+  text = gsub('[יטךכ]', 'e', text)
+  text = gsub('[פצ]', 'o', text)
+  text = gsub('[גהא]', 'a', text)
+  text = gsub('[מ]', 'i', text)
+  text = gsub('[ח]', 'c', text)
+  text = gsub('[üûש]', 'u', text)
+  
+  return(text)
 }
