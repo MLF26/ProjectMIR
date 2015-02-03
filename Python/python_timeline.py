@@ -19,10 +19,10 @@ def python_timeline(user):
 
     #Creation of the actual interface, using authentification
     api=tweepy.API(auth)
-    
+
     timeline = api.user_timeline(screen_name=user, include_rts=True, count=100)
     for tweet in timeline:
         print ("Text:", tweet.text)
         print ("Created:", tweet.created_at)
-        
-python_timeline("sniel76")
+
+python_timeline("olabayle")

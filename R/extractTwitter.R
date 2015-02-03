@@ -2,7 +2,7 @@ extract.twitter = function(subDir, words, ntweets = 10000000, startDate = Sys.Da
 {
         library(twitteR)
         library(stringi)
-        library( stringr)
+        library(stringr)
         library(SnowballC)
         library(tm)
         
@@ -93,12 +93,12 @@ clean.text = function(text)
   text = gsub('[[:cntrl:]]', '', text)
   text<-gsub("\n","",text)
   text = tolower(text)
-  text = gsub('[יטךכ]', 'e', text)
-  text = gsub('[פצ]', 'o', text)
-  text = gsub('[גהא]', 'a', text)
-  text = gsub('[מ]', 'i', text)
-  text = gsub('[ח]', 'c', text)
-  text = gsub('[üûש]', 'u', text)
+  text = gsub('[????]', 'e', text)
+  text = gsub('[??]', 'o', text)
+  text = gsub('[???]', 'a', text)
+  text = gsub('[?]', 'i', text)
+  text = gsub('[?]', 'c', text)
+  text = gsub('[???]', 'u', text)
   
   return(text)
 }
