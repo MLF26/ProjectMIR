@@ -95,7 +95,7 @@ clean.text = function(text)
   text = gsub('[éèêë]', 'e', text)
   text = gsub('[ôö]', 'o', text)
   text = gsub('[âäà]', 'a', text)
-  text = gsub('[î]', 'i', text)
+  text = gsub('[îï]', 'i', text)
   text = gsub('[ç]', 'c', text)
   text = gsub('[üûù]', 'u', text)
   
