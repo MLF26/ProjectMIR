@@ -7,10 +7,10 @@ getdictionnary=function(learningbase,freq=0.05){
         #RECHERCHE MOTS PLUS FREQUENTS
         
         #FREQUENCE MINIMALE D'APPARITION D'UN MOT
-        N<-freq*length(data$text)
+        N<-freq*length(data$textStemming)
         
         #CREATION D'UN CORPUS ET TDM
-        x<-Corpus(VectorSource(data$text))
+        x<-Corpus(VectorSource(data$textStemming))
         x<-TermDocumentMatrix(x,control = list(wordLengths = c(3,10))) #on ne considère pas les mots trop longs et trop courts
         
         #CONSTRUCTION DU DICTIONNAIRE DE MOTS
